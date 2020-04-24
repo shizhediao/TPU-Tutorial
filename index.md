@@ -53,7 +53,7 @@ Tip2: Google非常大方的在邮件里写如果有financial assistance, 可以�
 
     
 
-##Quickstart
+## Quickstart
 
 当我们根据以上步骤获取的TPU资源以后，下一步就是登陆和简单的配置工作。
 这方面Google的文档写的很清楚，我们一起入门一遍，基本上登录方式都是大同小异，除了有几个关键点要注意以外，其他复制粘贴就可以。忽略了一些关键点可能会产生额外的金钱消耗。。。
@@ -136,11 +136,11 @@ IP 地址位于 NETWORK_ENDPOINTS 列下方。在创建和配置 PyTorch 环境�
      gcloud compute tpus delete transformer-tutorial --zone=us-central1-a
 注意这里要指定name和--zone
 
-###一些有用的命令
+### 一些有用的命令
 前面是直接套用的命令模板，如果我们想单独做一些指令，比如单独申请disk space，下面是一些有用的命令
 Create Persistent Disk
 
-####创建磁盘空间
+#### 创建磁盘空间
 To attach a disk to an instance, both resources must reside in the same zone.
 On the command-line, run the following command to create a disk named "disk1" in zone "us-central1-f":
 
@@ -149,7 +149,7 @@ gcloud compute disks create disk1 --size 800GB --zone us-central1-f
 ```
 
 
-####创建VM instance
+#### 创建VM instance
 
 ```
   gcloud compute instances create \
@@ -162,29 +162,28 @@ gcloud compute disks create disk1 --size 800GB --zone us-central1-f
       --zone us-central1-f
 ```
 
-####在cloud shell查看正在运行的VM
+#### 在cloud shell查看正在运行的VM
 有时候我们想查看是否有正在运行的机器，防止自己忘记关掉。那么就需要这个命令. 
 注意：如果创建的时候指定了--name和--zone，那么ctpu status命令也必须要同时指定--name和--zone，这样才能看到正在运行的机器。目前我还没找到如何能一键列出所有正在running的VM
 ```
 ctpu status --name=tpu-tfrc  --zone=us-central1-f
 ```
 
-####删除VM和TPU
+#### 删除VM和TPU
 
 ```
 ctpu delete --name=tpu-tfrc  --zone=us-central1-f
 ```
 
 
-####关于sudo权限
+#### 关于sudo权限
 For security reasons, you can't ssh in as root. Since you're the VM Instance creator, you'll be able to run sudo without providing a password.
 
-####关于CPU
+#### 关于CPU
 默认的CPU是n1-standard-16，然而如果要跑image相关的程序，CPU配置越高越好。在[申请配额](https://console.cloud.google.com/iam-admin/quotas?folder=&organizationId=&project=tpu-tfrc) 界面可以申请提高CPU的核数，我把16个核提升到了96个，所以在创建vm的时候cpu可以设置    --machine-type=n1-highmem-96。
 
 
-##TPU-Pytorch
-##Pytorch: GPU->TPU的代码迁移
+## TPU-Pytorch: GPU->TPU的代码迁移
 因为TPU是Google开发的，所以之前很长一段时间TPU都不支持Pytorch，后来Facebook在PyTorch开发者大会上正式推出了PyTorch 1.3，并宣布了对谷歌云TPU的全面支持，而且还可以在Colab中调用云TPU。其中的关键是pytorch团队开发的[xla接口](https://github.com/pytorch/xla)，也正式因为这个库才使得在TPU上运行Pytorch逐渐成为可能（然而暗坑还是非常多。。。）
 我们手里的大多数代码都是基于Pytorch+GPU的，如果我们想把这个代码迁移到TPU上去运行，我们简单总结一下需要注意的地方。
 
@@ -216,7 +215,7 @@ import torch_xla.core.xla_model as xm
 
 一个官方给的[完整示例](https://github.com/pytorch/xla/blob/master/test/test_train_mp_mnist.py)
 
-###在 XLA 设备上变量的迁移
+### 在 XLA 设备上变量的迁移
 再举一个简单的例子
 ```
 t0 = torch.randn(2, 2, device
@@ -224,9 +223,9 @@ t1 = torch.randn(2, 2, device)
 print(t0 + t1)
 ```
 
-###在 XLA 设备上模型的迁移
+### 在 XLA 设备上模型的迁移
 建立新的 PyTorch 网络或转换现有网络以在 XLA 设备上运行仅需要几行 XLA 专用代码。
-####1. 在单个 XLA 设备上运行 (Single TPU)
+#### 1. 在单个 XLA 设备上运行 (Single TPU)
 
 ```
 import torch_xla.core.xla_model as xm
@@ -249,7 +248,7 @@ for data, target in train_loader:
   
 此代码段显示了如何在 单个XLA 上运行NN。 模型定义，数据加载器，优化器和训练循环可在任何设备上运行。 和以前代码的不同有两点： 1. device从cuda变成了xla device.  然后和以前一样把所有变量和模型都放到device上 2. 优化器部分，需要用到barrier 在每次训练迭代结束时调用xm.optimizer_step(optimizer, barrier=True)都会使 XLA 执行其当前图形并更新模型的参数  
 
-####2. 在多个 XLA 设备上运行 (Multi-TPU)
+#### 2. 在多个 XLA 设备上运行 (Multi-TPU)
 多进程方式：
 ```
 import torch_xla.core.xla_model as xm
@@ -287,7 +286,7 @@ if __name__ == '__main__':
 
 官方推荐使用多进程，但是我看[有人](https://zhuanlan.zhihu.com/p/88931693)推荐使用多线程。。。据说是实测不好用并且不好管理
 
-####多线程
+#### 多线程
 
 ```
 import torch_xla.distributed.data_parallel as dp
@@ -302,7 +301,7 @@ learning_rate = learning_rate * max(len(devices), 1)
 model_parallel = dp.DataParallel(MNIST, device_ids=devices)
 ```
 
-##Official Tutorial
+## Official Tutorial
 在完成了前面的基本操作以后，剩下的就是大同小异了，只是换一下数据集和模型。以下是官方提供的一些例子，可以训练Transformer的翻译任务、训练RoBERTa 和 Resnet50，大致过一遍就很快掌握了。
 
 [下载、预处理和上传 ImageNet 数据集](https://cloud.google.com/tpu/docs/imagenet-setup)
@@ -319,9 +318,9 @@ model_parallel = dp.DataParallel(MNIST, device_ids=devices)
 
 
 
-##Miscellaneous
+## Miscellaneous
 
-###TPU基本概念
+### TPU基本概念
 TPU全称是Tensor Processing Unit（张量处理单元），是为机器学习而定制的芯片，经过了专门深度机器学习方面的训练。我的理解是，GPU 的瓶颈在于对于数千个 ALU 中的每一次计算，都必须访问寄存器或共享内存，去读取和存储中间计算结果。毕竟GPU还是一个图像处理的通用处理器，不完全是为机器学习打造。而TPU是真正为矩阵操作设计的矩阵处理器。所以他可以超快地处理神经网络大量的乘法和加法运算，而且耗电量显著降低，占用的物理空间更小（handle the massive multiplications and additions for neural networks, at blazingly fast speeds while consuming much less power. ）一个显著的特点是集成了大量的ALU（e.g. 32,768）.
 
 
@@ -332,7 +331,7 @@ TPU的型号比较容易迷惑，大概有四种类型，分别是TPU V2/TPU V3/
 
 
 
-###TPU v.s. GPU
+### TPU v.s. GPU
 网上有很多不同的测评和不同的说法。一个初步的认识是
 来自Google 官方的测评：
 
@@ -342,14 +341,14 @@ TPU的型号比较容易迷惑，大概有四种类型，分别是TPU V2/TPU V3/
 ###特别注意机器区域的选择
 一般而言，TPU 训练的最佳做法是始终使用同一区域中的资源。在使用 TPU Pod 时，资源区域尤其重要，因为从 Google Cloud Storage 转移数据的速率往往更高。确保您使用 TPU 所在区域中的区域 Google Cloud Storage 存储分区来训练数据集和检查点。
 
-###关于价格
+### 关于价格
 ![Image](images/mis-tpuprice.png)
 
-###一些坑。。。
+### 一些坑。。。
 上面的内容基本都是来自于官方的文档，除此以外，我也看了很多人对TPU的使用评价和心得，很多人都在吐槽使用过程比较痛苦，主要是暗坑很多，如图所示。我主要关注到1.有人说tpu对TF的支持还不够完善更别提Pytorch了，2.一个使用了半年多的人放弃TPU了. 不过, 这个讨论是五个月以前的了,可能在这五个月里pytorch xla进步了很多，目前还没踩到很坑的地方。
 ![Image](images/zhihu1.png)
 ![Image](images/zhihu2.png)
 
-###关于TFRC
+### 关于TFRC
 关于TFRC，这是一个非常好的项目，就像开头提到的他们又慷慨的给了我$300的coupon。但是我注意到网上有一个人提醒“不要去问他们关于设置的问题，他们很烦你问设置问题，如果你一次申请完了之后问设置问题，第二次就别想申请了，他们希望你对google的版面足够熟悉”。So, 在此提醒一下大家。（这也说明好好表现的话可以有续期的机会:) ） 从我和他们为数不多的邮件沟通来说，他们比较关心你的research，给人的感觉是“如果我能帮助到你做有用的research，那我会非常开心，我不介意给你提供免费的资源，如果可以和我随时同步更新你的进展是最好的，如果不能，那最好也是你的研究是能够开放、开源、成果共享的”。
 
