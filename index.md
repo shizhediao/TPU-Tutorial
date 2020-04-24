@@ -1,13 +1,17 @@
 ## TPU-Tutorial
 最近在研究怎么利用Google免费的TPU薅羊毛，来跑BigGAN这种需要大量计算资源的项目。期间看了非常多杂乱的东西，比如官方文档（TPU的官方文档质量还不错，基本看文档就能完全上手）、技术博客、甚至知乎和公众号对使用过程的一些评价和体会（大多数吐槽坑很多），但是暂时没找到一个全面细致的新手入门指导。这算是一个学习的总结，对看到的东西进行回顾和梳理，也方便后来人快速上手。
 
+
+
 本教程主要是针对想利用免费TPU跑一些代码的同学，包括了一些基本介绍和使用操作说明。因为TPU对TF的支持比Pytorch要友好很多，并且手里多数项目都是Pytorch，所以实验部分抛弃了Tensorflow，着重对Pytorch的代码迁移进行介绍。
 ##获取TPU的三种方式
 
-1. 简单体验Colab。直接打开[Google Colab](https://colab.research.google.com/notebooks/intro.ipynb)，google就提供了TPU可供使用，优点是使用起来很方便快捷，打开就可以用到不需要配置，缺点是只是一个playground，如果要做大型项目的话还是要看后面两种方式。
+##### 1. 简单体验Colab。
+直接打开[Google Colab](https://colab.research.google.com/notebooks/intro.ipynb)，google就提供了TPU可供使用，优点是使用起来很方便快捷，打开就可以用到不需要配置，缺点是只是一个playground，如果要做大型项目的话还是要看后面两种方式。
 
 ![Image](images/colab1.png)
 ![Image](images/colab2.png)
+打开之后输入以下代码进行简单的环境配置
 
 ```
 import os
@@ -39,13 +43,17 @@ print(t)
 可以看到打印出来的device='xla:1' 说明变量已经在第一块TPU上了。XLA（Accelerated Linear Algebra）是一种针对特定领域的线性代数编译器，之后我们的模型和变量都会放到xla device上去。
 接下来介绍另外两种方法：
 
-2. 首次注册[Google Cloud](https://cloud.google.com/)，会得到$300的coupon可以体验。我第一次测试的时候大概一天用了$100（主要是TPU费用较多，所以建议注册后拿到赠金但是暂时不使用，先跳转到第三种方式）
+##### 2. 首次注册[Google Cloud](https://cloud.google.com/)，会得到$300的coupon可以体验。我第一次测试的时候大概一天用了$100（主要是TPU费用较多，所以建议注册后拿到赠金但是暂时不使用，先跳转到第三种方式）
 
-3. [TFRC project](https://www.tensorflow.org/tfrc). 这是一个Google针对researcher开放的计划，提供为期一个月的免费TPU（据说可以续期）。 
+##### 3. [TFRC project](https://www.tensorflow.org/tfrc). 
+这是一个Google针对researcher开放的计划，提供为期一个月的免费TPU（据说可以续期）。 
 在网页点击申请，填写一些基本信息，等待3天左右就可以通过了。3天后会收到一封邮件说明了登录方式，一般来说都会拿到5 on-demand Cloud TPU v2-8 and 5 on-demand Cloud TPU v3-8. 还有100 preemptible TPU(抢占式)。一般来说，5 on-demand Cloud TPU v3-8基本足够满足需求。
+
 Tip1: 收到这封确认邮件之后可以暂缓开通，等code和data准备好之后再开通也不迟，毕竟30天很快就过去。 
+
 Tip2: Google非常大方的在邮件里写如果有financial assistance, 可以申请。
 然后我就直接回复邮件说申请再得到一些coupon，对方简单问了一下项目信息（我就大致说了一下研究方向是generation），google就非常大方的又给了$300, 在free TPU的加持下，这笔赠金就显得非常有用了。
+
 为什么有了free TPU还需要花费？
 是因为项目的一切都在cloud上，disk/CPU/IO这些都需要花钱，具体价格我没仔细了解过（有点眼花缭乱），想弄清楚的小伙伴可以研究研究[价格表](https://cloud.google.com/pricing/list)然后我们一起讨论一下。
 我申请TPU的主要作用是image generation，想用来跑BigGAN, 所以有一部分花费是下载ImageNet(200+GB), 以及对于CPU要求非常高。
@@ -60,16 +68,17 @@ Tip2: Google非常大方的在邮件里写如果有financial assistance, 可以�
 当我们根据以上步骤获取的TPU资源以后，下一步就是登陆和简单的配置工作。
 这方面Google的文档写的很清楚，我们一起入门一遍，基本上登录方式都是大同小异，除了有几个关键点要注意以外，其他复制粘贴就可以。忽略了一些关键点可能会产生额外的金钱消耗。。。
 
-1. 打开一个[Cloud Shell 窗口](https://console.cloud.google.com/?cloudshell=true&_ga=2.167701886.1128517866.1587222657-534419039.1587222657)
-2. 为项目名称创建一个变量
+##### 1. 打开一个[Cloud Shell 窗口](https://console.cloud.google.com/?cloudshell=true&_ga=2.167701886.1128517866.1587222657-534419039.1587222657)
+##### 2. 为项目名称创建一个变量
 ```
 export PROJECT_NAME=project-name
 ```
-3. 配置 gcloud 命令行工具，以使用要在其中创建 Cloud TPU 的项目。
+##### 3. 配置 gcloud 命令行工具，以使用要在其中创建 Cloud TPU 的项目。
+
 ```
     gcloud config set project ${PROJECT_NAME}
 ```
-4. 从 Cloud Shell 启动所需的 Compute Engine 资源。
+##### 4. 从 Cloud Shell 启动所需的 Compute Engine 资源。
 
 ```
     gcloud compute --project=${PROJECT_NAME} instances create transformer-tutorial \
@@ -80,14 +89,14 @@ export PROJECT_NAME=project-name
     --boot-disk-size=200GB \
     --scopes=https://www.googleapis.com/auth/cloud-platform
 ```
-5. 连接到新的 Compute Engine 实例。
+##### 5. 连接到新的 Compute Engine 实例。
 
 ```gcloud compute ssh transformer-tutorial --zone=us-central1-a```
 
-6. 启动 Cloud TPU 资源
+##### 6. 启动 Cloud TPU 资源
 ```export VERSION=1.5```
 
-7. 在 Compute Engine 虚拟机中，使用以下命令启动 Cloud TPU 资源：
+##### 7. 在 Compute Engine 虚拟机中，使用以下命令启动 Cloud TPU 资源：
 
 ```
      gcloud compute tpus create transformer-tutorial \
@@ -97,29 +106,30 @@ export PROJECT_NAME=project-name
     --accelerator-type=v3-8
 ```
 
-8. 确定 Cloud TPU 资源的 IP 地址
+##### 8. 确定 Cloud TPU 资源的 IP 地址
 
 ```
      gcloud compute tpus list --zone=us-central1-a
 ```
 IP 地址位于 NETWORK_ENDPOINTS 列下方。在创建和配置 PyTorch 环境时需要用到该 IP 地址。
 
-9. 启动 conda 环境。
+##### 9. 启动 conda 环境。
 
      conda activate torch-xla-1.5
     
 
-10. 为 Cloud TPU 资源配置环境变量。
+##### 10. 为 Cloud TPU 资源配置环境变量。注意这一步一定要执行并且不能填错，之前我把指令多敲了一个字母结果没有报错，但是xla始终无法发现TPU device。如果你的程序找不到TPU device话大概率是需要检查一下这一步有没有设置正确。
+
 ```
     export TPU_IP_ADDRESS=ip-address; \
     export XRT_TPU_CONFIG="tpu_worker;0;$TPU_IP_ADDRESS:8470"
 ```
 
-11. 运行python脚本
+##### 11. 运行python脚本
 ```python xxx.py```
 
 
-12. 清理。使用完创建的资源后，需要进行清理，避免产生不必要的费用：
+##### 12. 清理。使用完创建的资源后，需要进行清理，避免产生不必要的费用：
 
 首先，断开与 Compute Engine 实例的连接：
 
@@ -197,7 +207,7 @@ For security reasons, you can't ssh in as root. Since you're the VM Instance cre
 依靠Pytorch的XLA接口，我们可以很方便的使用Pytorch。根据我目前的理解，用一句话简单概括来说，就是“最大的变化是device的迁移，其他基本不变”。
 device是指之前写GPU的程序需要用.to(device)来指定使用哪块GPU，现在同理我们只需要把device变量换成TPU的device就可以了。具体来讲分为一下几步：
 
-1. import torch and xla
+##### 1. import torch and xla
 
 ```
 import torch
@@ -205,10 +215,10 @@ import torch_xla
 import torch_xla.core.xla_model as xm
 ```
 
-2. 获取device ```device=xm.xla_device() ```
-3. 给变量和模型指定device  ```t = torch.randn(2, 2, device)```
+##### 2. 获取device ```device=xm.xla_device() ```
+##### 3. 给变量和模型指定device  ```t = torch.randn(2, 2, device)```
 整个过程非常简单
-4. optimizer要进行相应适配  
+##### 4. optimizer要进行相应适配  
 
 ```
 单卡: xm.optimizer_step(optimizer, barrier=True) 
@@ -252,6 +262,7 @@ for data, target in train_loader:
 
 #### 2. 在多个 XLA 设备上运行 (Multi-TPU)
 多进程方式：
+
 ```
 import torch_xla.core.xla_model as xm
 import torch_xla.distributed.parallel_loader as pl
@@ -278,11 +289,11 @@ if __name__ == '__main__':
 
 此多设备代码段和先前的单设备代码段之间存在三个区别：
 
-1. xmp.spawn()创建分别运行 XLA 设备的进程。
+##### 1. xmp.spawn()创建分别运行 XLA 设备的进程。
 
-2. ParallelLoader将训练数据加载到每个设备上。
+##### 2. ParallelLoader将训练数据加载到每个设备上。
 
-3. xm.optimizer_step(optimizer)不再需要障碍。 ParallelLoader 自动创建用于评估图形的 XLA 障碍。
+##### 3. xm.optimizer_step(optimizer)不再需要障碍。 ParallelLoader 自动创建用于评估图形的 XLA 障碍。
 
 模型定义，优化器定义和训练循环保持不变。
 
@@ -334,11 +345,12 @@ TPU的型号比较容易迷惑，大概有四种类型，分别是TPU V2/TPU V3/
 
 
 ### TPU v.s. GPU
-网上有很多不同的测评和不同的说法。一个初步的认识是
-来自Google 官方的测评：
+网上有很多不同的测评和不同的说法。一个初步的认识是一块TPU v2 core的算力等于一块GPU V100，所以，一台TPU V2-8等于一台八卡V100机器
+来自[Google 官方](https://cloud.google.com/tpu)的测评：
+![Image](images/tpuvsgpu1.png)
 
-来自权威测评网站的测评：
-
+来自[民间](https://medium.com/bigdatarepublic/cost-comparison-of-deep-learning-hardware-google-tpuv2-vs-nvidia-tesla-v100-3c63fe56c20f)的测评：
+![Image](images/tpuvsgpu3.png)
 
 ###特别注意机器区域的选择
 一般而言，TPU 训练的最佳做法是始终使用同一区域中的资源。在使用 TPU Pod 时，资源区域尤其重要，因为从 Google Cloud Storage 转移数据的速率往往更高。确保您使用 TPU 所在区域中的区域 Google Cloud Storage 存储分区来训练数据集和检查点。
@@ -353,4 +365,6 @@ TPU的型号比较容易迷惑，大概有四种类型，分别是TPU V2/TPU V3/
 
 ### 关于TFRC
 关于TFRC，这是一个非常好的项目，就像开头提到的他们又慷慨的给了我$300的coupon。但是我注意到网上有一个人提醒“不要去问他们关于设置的问题，他们很烦你问设置问题，如果你一次申请完了之后问设置问题，第二次就别想申请了，他们希望你对google的版面足够熟悉”。So, 在此提醒一下大家。（这也说明好好表现的话可以有续期的机会:) ） 从我和他们为数不多的邮件沟通来说，他们比较关心你的research，给人的感觉是“如果我能帮助到你做有用的research，那我会非常开心，我不介意给你提供免费的资源，如果可以和我随时同步更新你的进展是最好的，如果不能，那最好也是你的研究是能够开放、开源、成果共享的”。
+
+
 
