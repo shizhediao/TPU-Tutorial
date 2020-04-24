@@ -37,8 +37,10 @@ print(t)
 ```
 ![Image](images/colab3.png)
 可以看到打印出来的device='xla:1' 说明变量已经在第一块TPU上了。XLA（Accelerated Linear Algebra）是一种针对特定领域的线性代数编译器，之后我们的模型和变量都会放到xla device上去。
+接下来介绍另外两种方法：
 
 2. 首次注册[Google Cloud](https://cloud.google.com/)，会得到$300的coupon可以体验。我第一次测试的时候大概一天用了$100（主要是TPU费用较多，所以建议注册后拿到赠金但是暂时不使用，先跳转到第三种方式）
+
 3. [TFRC project](https://www.tensorflow.org/tfrc). 这是一个Google针对researcher开放的计划，提供为期一个月的免费TPU（据说可以续期）。 
 在网页点击申请，填写一些基本信息，等待3天左右就可以通过了。3天后会收到一封邮件说明了登录方式，一般来说都会拿到5 on-demand Cloud TPU v2-8 and 5 on-demand Cloud TPU v3-8. 还有100 preemptible TPU(抢占式)。一般来说，5 on-demand Cloud TPU v3-8基本足够满足需求。
 Tip1: 收到这封确认邮件之后可以暂缓开通，等code和data准备好之后再开通也不迟，毕竟30天很快就过去。 
