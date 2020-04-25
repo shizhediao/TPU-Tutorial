@@ -187,6 +187,26 @@ ctpu status --name=tpu-tfrc  --zone=us-central1-f
 ctpu delete --name=tpu-tfrc  --zone=us-central1-f
 ```
 
+#### 监控TPU利用率
+##### 1. 安装cloud-tpu-profiler, 版本号最好是填写1.15.0rc1. 这里遇到的一个坑是忘记安装也找不到安装指令了，就一直出错。后来才发现安装的命令行是什么，并且最好版本要对应！
+
+```
+pip freeze | grep cloud-tpu-profiler
+pip install --upgrade "cloud-tpu-profiler==1.15.0rc1"
+pip install tensorflow
+```
+##### 2. 指定路径
+
+```
+export PATH="$PATH:`python -m site --user-base`/bin"
+```
+
+##### 3. 开始监控
+
+```
+capture_tpu_profile --tpu=$TPU_NAME  --monitoring_level=1
+capture_tpu_profile --tpu=$TPU_NAME  --monitoring_level=2 (会显示更详细的信息)
+```
 
 #### 关于sudo权限
 For security reasons, you can't ssh in as root. Since you're the VM Instance creator, you'll be able to run sudo without providing a password.
