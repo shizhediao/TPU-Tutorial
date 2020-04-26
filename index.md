@@ -206,6 +206,18 @@ export PATH="$PATH:`python -m site --user-base`/bin"
 ```
 capture_tpu_profile --tpu=$TPU_NAME  --monitoring_level=1
 capture_tpu_profile --tpu=$TPU_NAME  --monitoring_level=2 (会显示更详细的信息)
+capture_tpu_profile --tpu=$TPU_NAME  --monitoring_level=2 --num_queries 1000
+```
+
+```
+--tpu（必需）指定要监控的 Cloud TPU 的名称。
+
+--monitoring_level。将 capture_tpu_profile 的行为从生成单个性能剖析文件更改为生成基本或详细的持续监控数据。此标志有以下三个等级： 
+第 0 级（默认）：生成一个性能剖析文件，然后退出。
+第 1 级：显示 TPU 版本和 TPU 利用率。 
+第 2 级：显示 TPU 利用率、TPU 空闲时间和使用的 TPU 核心数量。同时提供单步用时的最小值、平均值和最大值，以及馈入百分比贡献。
+--duration_ms（可选；默认值为 1000ms）指定在每个周期内分析 TPU 主机的时间。通常，这个时长应足够长，以便捕获至少一个训练步的数据。在大多数模型中，1 秒可捕获一个训练步，但如果模型单步用时非常大，则可以将此值设置为 step_time 的 2 倍（以毫秒为单位）。
+--num_queries 指定运行 capture_tpu_profile 的周期数。 如需持续监控 TPU 作业，请将此值设置为较大的数字。 如需快速检查模型的单步用时，请将此值设置为较小的数字。
 ```
 
 #### 关于sudo权限
@@ -213,6 +225,7 @@ For security reasons, you can't ssh in as root. Since you're the VM Instance cre
 
 #### 关于CPU
 默认的CPU是n1-standard-16，然而如果要跑image相关的程序，CPU配置越高越好。在[申请配额](https://console.cloud.google.com/iam-admin/quotas?folder=&organizationId=&project=tpu-tfrc) 界面可以申请提高CPU的核数，我把16个核提升到了96个，所以在创建vm的时候cpu可以设置    --machine-type=n1-highmem-96。
+20200425更新，然而用上了这个CPU之后，一天花了HKD 1000。。我立刻停掉了
 
 
 ## TPU-Pytorch: GPU->TPU的代码迁移
