@@ -1,8 +1,8 @@
 ## TPU-Tutorial
-最近在研究怎么利用Google免费的TPU薅羊毛，来跑BigGAN这种需要大量计算资源的项目。期间看了非常多杂乱的东西，比如官方文档（TPU的官方文档质量还不错，基本看文档就能完全上手）、技术博客、甚至知乎和公众号对使用过程的一些评价和体会（大多数吐槽坑很多），但是暂时没找到一个全面细致的新手入门指导。这算是一个学习的总结，对看到的东西进行回顾和梳理，也方便后来人快速上手。
+最近在研究怎么利用Google免费的TPU薅羊毛，来跑BigGAN这种需要大量计算资源的项目。期间看了非常多的资料，比如官方文档（TPU的官方文档质量还不错，基本看文档就能完全上手）、技术博客、甚至知乎和公众号对使用过程的一些评价和体会（大多数吐槽坑很多），但是暂时没找到一个全面细致的新手入门指导。因为用TPU+Pytorch的用户不多，所以可以搜到的入门tutorial很少，对问题的解决方案也很少。毕竟Pytorch的用户越来越多，之后想要用TPU训练Pytorch的需求应该也会越来越多。这算是一个学习的总结，对看到的东西进行回顾和梳理，也方便后来人快速上手，希望可以帮到后来人，也欢迎大家找我交流和讨论。
 
 
-本教程主要是针对想利用免费TPU跑一些代码的同学，包括了一些基本介绍和使用操作说明。因为TPU对TF的支持比Pytorch要友好很多，并且手里多数项目都是Pytorch，所以实验部分抛弃了Tensorflow，着重对Pytorch的代码迁移进行介绍。
+本教程主要是针对想利用免费TPU跑一些代码的同学，包括了一些基本介绍和使用操作说明。因为TPU对TF的支持比Pytorch要友好很多，并且手里多数项目都是Pytorch，所以本文的实验部分抛弃了对Tensorflow的介绍，着重对Pytorch的代码迁移进行介绍。
 
 ### 获取TPU的三种方式
 
@@ -150,7 +150,7 @@ IP 地址位于 NETWORK_ENDPOINTS 列下方。在创建和配置 PyTorch 环境�
      gcloud compute tpus delete transformer-tutorial --zone=us-central1-a
 注意这里要指定name和--zone
 
-### 一些有用的命令
+### Useful Commands
 前面是直接套用的命令模板，如果我们想单独做一些指令，比如单独申请disk space，下面是一些有用的命令
 Create Persistent Disk
 
@@ -368,7 +368,7 @@ model_parallel = dp.DataParallel(MNIST, device_ids=devices)
 
 ## Miscellaneous
 
-### TPU基本概念
+### Understanding TPU
 TPU全称是Tensor Processing Unit（张量处理单元），是为机器学习而定制的芯片，经过了专门深度机器学习方面的训练。我的理解是，GPU 的瓶颈在于对于数千个 ALU 中的每一次计算，都必须访问寄存器或共享内存，去读取和存储中间计算结果。毕竟GPU还是一个图像处理的通用处理器，不完全是为机器学习打造。而TPU是真正为矩阵操作设计的矩阵处理器。所以他可以超快地处理神经网络大量的乘法和加法运算，而且耗电量显著降低，占用的物理空间更小（handle the massive multiplications and additions for neural networks, at blazingly fast speeds while consuming much less power. ）一个显著的特点是集成了大量的ALU（e.g. 32,768）.
 
 
@@ -387,16 +387,25 @@ TPU的型号比较容易迷惑，大概有四种类型，分别是TPU V2/TPU V3/
 来自[民间](https://medium.com/bigdatarepublic/cost-comparison-of-deep-learning-hardware-google-tpuv2-vs-nvidia-tesla-v100-3c63fe56c20f)的测评：
 ![Image](images/tpuvsgpu3.png)
 
-### 特别注意机器区域的选择
+### Zone
 一般而言，TPU 训练的最佳做法是始终使用同一区域中的资源。在使用 TPU Pod 时，资源区域尤其重要，因为从 Google Cloud Storage 转移数据的速率往往更高。确保您使用 TPU 所在区域中的区域 Google Cloud Storage 存储分区来训练数据集和检查点。
 
 ### About Price
+这是TPU价格的介绍
 ![Image](images/mis-tpuprice.png)
 
-### 一些坑。。。
-上面的内容基本都是来自于官方的文档，除此以外，我也看了很多人对TPU的使用评价和心得，很多人都在吐槽使用过程比较痛苦，主要是暗坑很多，如图所示。我主要关注到1.有人说tpu对TF的支持还不够完善更别提Pytorch了，2.一个使用了半年多的人放弃TPU了. 不过, 这个讨论是五个月以前的了,可能在这五个月里pytorch xla进步了很多，目前还没踩到很坑的地方。
+除了TPU比较贵以外，花费最高的应该是CPU，核数越多、RAM越大，价格会越高。磁盘的话，机械硬盘很便宜，SSD也不是很贵。
+<figure class="half">
+    <img src="https://share.getcloudapp.com/wbu09wl1">
+    <img src="https://share.getcloudapp.com/7Ku0pP5j">
+</figure>
+
+### Comments from other users
+上面的内容基本都是来自于官方的文档，除此以外，我也看了很多人对TPU的使用评价和心得，很多人都在吐槽使用过程比较痛苦，主要是坑很多，如图所示。我主要关注到1.有人说tpu对TF的支持还不够完善更别提Pytorch了，2.一个使用了半年多的人放弃TPU了. 不过, 这个讨论是五个月以前的了,可能在这五个月里pytorch xla进步了很多。
 ![Image](images/zhihu1.png)
 ![Image](images/zhihu2.png)
+就我目前的使用体验来说，还没有踩到很坑并且不能解决的问题。在跑实验的过程中确实遇到了不少问题，因为用TPU+Pytorch的用户不多，所以可以搜到的解决方案也很少。一开始遇到问题我就疯狂搜索Google和文档，有些可以解决，但是有一个memory的问题一直没找到原因和方法，后来突然想到可以在github提issue，没想到作者response非常快，几分钟就把卡了半天的问题解决了。所以鼓励大家遇到问题，如果搜不到解决方案的话，可以去github提issue，目前Pytorch/xla正在快速迭代和开发，作者反应比较快。
+
 
 ### 关于TFRC
 关于TFRC，这是一个非常好的项目，就像开头提到的他们又慷慨的给了我$300的coupon。但是我注意到网上有一个人提醒“不要去问他们关于设置的问题，他们很烦你问设置问题，如果你一次申请完了之后问设置问题，第二次就别想申请了，他们希望你对google的版面足够熟悉”。So, 在此提醒一下大家。（这也说明好好表现的话可以有续期的机会:) ） 从我和他们为数不多的邮件沟通来说，他们比较关心你的research，给人的感觉是“如果我能帮助到你做有用的research，那我会非常开心，我不介意给你提供免费的资源，如果可以和我随时同步更新你的进展是最好的，如果不能，那最好也是你的研究是能够开放、开源、成果共享的”。
