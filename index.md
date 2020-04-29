@@ -1,47 +1,5 @@
-<!-- START doctoc generated TOC please keep comment here to allow auto update -->
-<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
-**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
-
-- [获取TPU的三种方式](#%E8%8E%B7%E5%8F%96tpu%E7%9A%84%E4%B8%89%E7%A7%8D%E6%96%B9%E5%BC%8F)
-  - [1. 简单体验Colab](#1-%E7%AE%80%E5%8D%95%E4%BD%93%E9%AA%8Ccolab)
-  - [2. 首次注册Google Cloud](#2-%E9%A6%96%E6%AC%A1%E6%B3%A8%E5%86%8Cgoogle-cloud%E4%BC%9A%E5%BE%97%E5%88%B0300%E7%9A%84coupon%E5%8F%AF%E4%BB%A5%E4%BD%93%E9%AA%8C%E6%88%91%E7%AC%AC%E4%B8%80%E6%AC%A1%E6%B5%8B%E8%AF%95%E7%9A%84%E6%97%B6%E5%80%99%E5%A4%A7%E6%A6%82%E4%B8%80%E5%A4%A9%E7%94%A8%E4%BA%86100%E4%B8%BB%E8%A6%81%E6%98%AFtpu%E8%B4%B9%E7%94%A8%E8%BE%83%E5%A4%9A%E6%89%80%E4%BB%A5%E5%BB%BA%E8%AE%AE%E6%B3%A8%E5%86%8C%E5%90%8E%E6%8B%BF%E5%88%B0%E8%B5%A0%E9%87%91%E4%BD%86%E6%98%AF%E6%9A%82%E6%97%B6%E4%B8%8D%E4%BD%BF%E7%94%A8%E5%85%88%E8%B7%B3%E8%BD%AC%E5%88%B0%E7%AC%AC%E4%B8%89%E7%A7%8D%E6%96%B9%E5%BC%8F)
-  - [3. TFRC project](#3-tfrc-project)
-- [Quickstart](#quickstart)
-  - [一些有用的命令](#%E4%B8%80%E4%BA%9B%E6%9C%89%E7%94%A8%E7%9A%84%E5%91%BD%E4%BB%A4)
-    - [创建磁盘空间](#%E5%88%9B%E5%BB%BA%E7%A3%81%E7%9B%98%E7%A9%BA%E9%97%B4)
-    - [创建VM instance](#%E5%88%9B%E5%BB%BAvm-instance)
-    - [在cloud shell查看正在运行的VM](#%E5%9C%A8cloud-shell%E6%9F%A5%E7%9C%8B%E6%AD%A3%E5%9C%A8%E8%BF%90%E8%A1%8C%E7%9A%84vm)
-    - [删除VM和TPU](#%E5%88%A0%E9%99%A4vm%E5%92%8Ctpu)
-    - [监控TPU利用率](#%E7%9B%91%E6%8E%A7tpu%E5%88%A9%E7%94%A8%E7%8E%87)
-    - [关于sudo权限](#%E5%85%B3%E4%BA%8Esudo%E6%9D%83%E9%99%90)
-    - [关于CPU](#%E5%85%B3%E4%BA%8Ecpu)
-- [TPU-Pytorch: GPU->TPU的代码迁移](#tpu-pytorch-gpu-tpu%E7%9A%84%E4%BB%A3%E7%A0%81%E8%BF%81%E7%A7%BB)
-      - [1. import torch and xla](#1-import-torch-and-xla)
-      - [2. 获取device ```device=xm.xla_device() ```](#2-%E8%8E%B7%E5%8F%96device-devicexmxla_device-)
-      - [3. 给变量和模型指定device  ```t = torch.randn(2, 2, device)```](#3-%E7%BB%99%E5%8F%98%E9%87%8F%E5%92%8C%E6%A8%A1%E5%9E%8B%E6%8C%87%E5%AE%9Adevice--t--torchrandn2-2-device)
-      - [4. optimizer要进行相应适配](#4-optimizer%E8%A6%81%E8%BF%9B%E8%A1%8C%E7%9B%B8%E5%BA%94%E9%80%82%E9%85%8D)
-  - [在 XLA 设备上变量的迁移](#%E5%9C%A8-xla-%E8%AE%BE%E5%A4%87%E4%B8%8A%E5%8F%98%E9%87%8F%E7%9A%84%E8%BF%81%E7%A7%BB)
-  - [在 XLA 设备上模型的迁移](#%E5%9C%A8-xla-%E8%AE%BE%E5%A4%87%E4%B8%8A%E6%A8%A1%E5%9E%8B%E7%9A%84%E8%BF%81%E7%A7%BB)
-    - [1. 在单个 XLA 设备上运行 (Single TPU)](#1-%E5%9C%A8%E5%8D%95%E4%B8%AA-xla-%E8%AE%BE%E5%A4%87%E4%B8%8A%E8%BF%90%E8%A1%8C-single-tpu)
-    - [2. 在多个 XLA 设备上运行 (Multi-TPU)](#2-%E5%9C%A8%E5%A4%9A%E4%B8%AA-xla-%E8%AE%BE%E5%A4%87%E4%B8%8A%E8%BF%90%E8%A1%8C-multi-tpu)
-      - [1. xmp.spawn()创建分别运行 XLA 设备的进程。](#1-xmpspawn%E5%88%9B%E5%BB%BA%E5%88%86%E5%88%AB%E8%BF%90%E8%A1%8C-xla-%E8%AE%BE%E5%A4%87%E7%9A%84%E8%BF%9B%E7%A8%8B)
-      - [2. ParallelLoader将训练数据加载到每个设备上。](#2-parallelloader%E5%B0%86%E8%AE%AD%E7%BB%83%E6%95%B0%E6%8D%AE%E5%8A%A0%E8%BD%BD%E5%88%B0%E6%AF%8F%E4%B8%AA%E8%AE%BE%E5%A4%87%E4%B8%8A)
-      - [3. xm.optimizer_step(optimizer)](#3-xmoptimizer_stepoptimizer%E4%B8%8D%E5%86%8D%E9%9C%80%E8%A6%81%E9%9A%9C%E7%A2%8D-parallelloader-%E8%87%AA%E5%8A%A8%E5%88%9B%E5%BB%BA%E7%94%A8%E4%BA%8E%E8%AF%84%E4%BC%B0%E5%9B%BE%E5%BD%A2%E7%9A%84-xla-%E9%9A%9C%E7%A2%8D)
-    - [多线程](#%E5%A4%9A%E7%BA%BF%E7%A8%8B)
-- [Official Tutorial](#official-tutorial)
-- [Miscellaneous](#miscellaneous)
-	- [TPU基本概念](#tpu%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5)
-	- [TPU v.s. GPU](#tpu-vs-gpu)
-	- [特别注意机器区域的选择](#%E7%89%B9%E5%88%AB%E6%B3%A8%E6%84%8F%E6%9C%BA%E5%99%A8%E5%8C%BA%E5%9F%9F%E7%9A%84%E9%80%89%E6%8B%A9)
-	- [关于价格](#%E5%85%B3%E4%BA%8E%E4%BB%B7%E6%A0%BC)
-	- [一些坑。。。](#%E4%B8%80%E4%BA%9B%E5%9D%91)
-	- [关于TFRC](#%E5%85%B3%E4%BA%8Etfrc)
-
-<!-- END doctoc generated TOC please keep comment here to allow auto update -->
-
 ## TPU-Tutorial
 最近在研究怎么利用Google免费的TPU薅羊毛，来跑BigGAN这种需要大量计算资源的项目。期间看了非常多杂乱的东西，比如官方文档（TPU的官方文档质量还不错，基本看文档就能完全上手）、技术博客、甚至知乎和公众号对使用过程的一些评价和体会（大多数吐槽坑很多），但是暂时没找到一个全面细致的新手入门指导。这算是一个学习的总结，对看到的东西进行回顾和梳理，也方便后来人快速上手。
-
 
 
 本教程主要是针对想利用免费TPU跑一些代码的同学，包括了一些基本介绍和使用操作说明。因为TPU对TF的支持比Pytorch要友好很多，并且手里多数项目都是Pytorch，所以实验部分抛弃了Tensorflow，着重对Pytorch的代码迁移进行介绍。
