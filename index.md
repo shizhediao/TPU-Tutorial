@@ -390,7 +390,7 @@ TPU的型号比较容易迷惑，大概有四种类型，分别是TPU V2/TPU V3/
 ### 特别注意机器区域的选择
 一般而言，TPU 训练的最佳做法是始终使用同一区域中的资源。在使用 TPU Pod 时，资源区域尤其重要，因为从 Google Cloud Storage 转移数据的速率往往更高。确保您使用 TPU 所在区域中的区域 Google Cloud Storage 存储分区来训练数据集和检查点。
 
-### 关于价格
+### About Price
 ![Image](images/mis-tpuprice.png)
 
 ### 一些坑。。。
