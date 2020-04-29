@@ -397,7 +397,6 @@ TPU的型号比较容易迷惑，大概有四种类型，分别是TPU V2/TPU V3/
 除了TPU比较贵以外，花费最高的应该是CPU，核数越多、RAM越大，价格会越高。磁盘的话，机械硬盘很便宜，SSD也不是很贵。
 
 <div style="float:left;border:solid 1px 000;margin:2px;"><img src="images/CPU-Price1.png"  width="280" height="360" ></div>
-
 <div style="float:left;border:solid 1px 000;margin:2px;"><img src="images/CPU-Price2.png" width="280" height="360" ></div> 
 
 
