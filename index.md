@@ -395,8 +395,10 @@ TPU的型号比较容易迷惑，大概有四种类型，分别是TPU V2/TPU V3/
 ![Image](images/mis-tpuprice.png)
 
 除了TPU比较贵以外，花费最高的应该是CPU，核数越多、RAM越大，价格会越高。磁盘的话，机械硬盘很便宜，SSD也不是很贵。
-![Image](images/CPU-Price1.png) ![Image](images/CPU-Price2.png)
 
+<div style="float:left;border:solid 1px 000;margin:2px;"><img src="images/CPU-Price1.png"  width="200" height="260" ></div>
+
+<div style="float:left;border:solid 1px 000;margin:2px;"><img src="images/CPU-Price2.png" width="200" height="260" ></div>
 
 ### Comments from other users
 上面的内容基本都是来自于官方的文档，除此以外，我也看了很多人对TPU的使用评价和心得，很多人都在吐槽使用过程比较痛苦，主要是坑很多，如图所示。我主要关注到1.有人说tpu对TF的支持还不够完善更别提Pytorch了，2.一个使用了半年多的人放弃TPU了. 不过, 这个讨论是五个月以前的了,可能在这五个月里pytorch xla进步了很多。
