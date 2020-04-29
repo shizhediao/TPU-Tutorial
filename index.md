@@ -1,3 +1,44 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [获取TPU的三种方式](#%E8%8E%B7%E5%8F%96tpu%E7%9A%84%E4%B8%89%E7%A7%8D%E6%96%B9%E5%BC%8F)
+  - [1. 简单体验Colab](#1-%E7%AE%80%E5%8D%95%E4%BD%93%E9%AA%8Ccolab)
+  - [2. 首次注册Google Cloud](#2-%E9%A6%96%E6%AC%A1%E6%B3%A8%E5%86%8Cgoogle-cloud%E4%BC%9A%E5%BE%97%E5%88%B0300%E7%9A%84coupon%E5%8F%AF%E4%BB%A5%E4%BD%93%E9%AA%8C%E6%88%91%E7%AC%AC%E4%B8%80%E6%AC%A1%E6%B5%8B%E8%AF%95%E7%9A%84%E6%97%B6%E5%80%99%E5%A4%A7%E6%A6%82%E4%B8%80%E5%A4%A9%E7%94%A8%E4%BA%86100%E4%B8%BB%E8%A6%81%E6%98%AFtpu%E8%B4%B9%E7%94%A8%E8%BE%83%E5%A4%9A%E6%89%80%E4%BB%A5%E5%BB%BA%E8%AE%AE%E6%B3%A8%E5%86%8C%E5%90%8E%E6%8B%BF%E5%88%B0%E8%B5%A0%E9%87%91%E4%BD%86%E6%98%AF%E6%9A%82%E6%97%B6%E4%B8%8D%E4%BD%BF%E7%94%A8%E5%85%88%E8%B7%B3%E8%BD%AC%E5%88%B0%E7%AC%AC%E4%B8%89%E7%A7%8D%E6%96%B9%E5%BC%8F)
+  - [3. TFRC project](#3-tfrc-project)
+- [Quickstart](#quickstart)
+  - [一些有用的命令](#%E4%B8%80%E4%BA%9B%E6%9C%89%E7%94%A8%E7%9A%84%E5%91%BD%E4%BB%A4)
+    - [创建磁盘空间](#%E5%88%9B%E5%BB%BA%E7%A3%81%E7%9B%98%E7%A9%BA%E9%97%B4)
+    - [创建VM instance](#%E5%88%9B%E5%BB%BAvm-instance)
+    - [在cloud shell查看正在运行的VM](#%E5%9C%A8cloud-shell%E6%9F%A5%E7%9C%8B%E6%AD%A3%E5%9C%A8%E8%BF%90%E8%A1%8C%E7%9A%84vm)
+    - [删除VM和TPU](#%E5%88%A0%E9%99%A4vm%E5%92%8Ctpu)
+    - [监控TPU利用率](#%E7%9B%91%E6%8E%A7tpu%E5%88%A9%E7%94%A8%E7%8E%87)
+    - [关于sudo权限](#%E5%85%B3%E4%BA%8Esudo%E6%9D%83%E9%99%90)
+    - [关于CPU](#%E5%85%B3%E4%BA%8Ecpu)
+- [TPU-Pytorch: GPU->TPU的代码迁移](#tpu-pytorch-gpu-tpu%E7%9A%84%E4%BB%A3%E7%A0%81%E8%BF%81%E7%A7%BB)
+      - [1. import torch and xla](#1-import-torch-and-xla)
+      - [2. 获取device ```device=xm.xla_device() ```](#2-%E8%8E%B7%E5%8F%96device-devicexmxla_device-)
+      - [3. 给变量和模型指定device  ```t = torch.randn(2, 2, device)```](#3-%E7%BB%99%E5%8F%98%E9%87%8F%E5%92%8C%E6%A8%A1%E5%9E%8B%E6%8C%87%E5%AE%9Adevice--t--torchrandn2-2-device)
+      - [4. optimizer要进行相应适配](#4-optimizer%E8%A6%81%E8%BF%9B%E8%A1%8C%E7%9B%B8%E5%BA%94%E9%80%82%E9%85%8D)
+  - [在 XLA 设备上变量的迁移](#%E5%9C%A8-xla-%E8%AE%BE%E5%A4%87%E4%B8%8A%E5%8F%98%E9%87%8F%E7%9A%84%E8%BF%81%E7%A7%BB)
+  - [在 XLA 设备上模型的迁移](#%E5%9C%A8-xla-%E8%AE%BE%E5%A4%87%E4%B8%8A%E6%A8%A1%E5%9E%8B%E7%9A%84%E8%BF%81%E7%A7%BB)
+    - [1. 在单个 XLA 设备上运行 (Single TPU)](#1-%E5%9C%A8%E5%8D%95%E4%B8%AA-xla-%E8%AE%BE%E5%A4%87%E4%B8%8A%E8%BF%90%E8%A1%8C-single-tpu)
+    - [2. 在多个 XLA 设备上运行 (Multi-TPU)](#2-%E5%9C%A8%E5%A4%9A%E4%B8%AA-xla-%E8%AE%BE%E5%A4%87%E4%B8%8A%E8%BF%90%E8%A1%8C-multi-tpu)
+      - [1. xmp.spawn()创建分别运行 XLA 设备的进程。](#1-xmpspawn%E5%88%9B%E5%BB%BA%E5%88%86%E5%88%AB%E8%BF%90%E8%A1%8C-xla-%E8%AE%BE%E5%A4%87%E7%9A%84%E8%BF%9B%E7%A8%8B)
+      - [2. ParallelLoader将训练数据加载到每个设备上。](#2-parallelloader%E5%B0%86%E8%AE%AD%E7%BB%83%E6%95%B0%E6%8D%AE%E5%8A%A0%E8%BD%BD%E5%88%B0%E6%AF%8F%E4%B8%AA%E8%AE%BE%E5%A4%87%E4%B8%8A)
+      - [3. xm.optimizer_step(optimizer)](#3-xmoptimizer_stepoptimizer%E4%B8%8D%E5%86%8D%E9%9C%80%E8%A6%81%E9%9A%9C%E7%A2%8D-parallelloader-%E8%87%AA%E5%8A%A8%E5%88%9B%E5%BB%BA%E7%94%A8%E4%BA%8E%E8%AF%84%E4%BC%B0%E5%9B%BE%E5%BD%A2%E7%9A%84-xla-%E9%9A%9C%E7%A2%8D)
+    - [多线程](#%E5%A4%9A%E7%BA%BF%E7%A8%8B)
+- [Official Tutorial](#official-tutorial)
+- [Miscellaneous](#miscellaneous)
+	- [TPU基本概念](#tpu%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5)
+	- [TPU v.s. GPU](#tpu-vs-gpu)
+	- [特别注意机器区域的选择](#%E7%89%B9%E5%88%AB%E6%B3%A8%E6%84%8F%E6%9C%BA%E5%99%A8%E5%8C%BA%E5%9F%9F%E7%9A%84%E9%80%89%E6%8B%A9)
+	- [关于价格](#%E5%85%B3%E4%BA%8E%E4%BB%B7%E6%A0%BC)
+	- [一些坑。。。](#%E4%B8%80%E4%BA%9B%E5%9D%91)
+	- [关于TFRC](#%E5%85%B3%E4%BA%8Etfrc)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 ## TPU-Tutorial
 最近在研究怎么利用Google免费的TPU薅羊毛，来跑BigGAN这种需要大量计算资源的项目。期间看了非常多杂乱的东西，比如官方文档（TPU的官方文档质量还不错，基本看文档就能完全上手）、技术博客、甚至知乎和公众号对使用过程的一些评价和体会（大多数吐槽坑很多），但是暂时没找到一个全面细致的新手入门指导。这算是一个学习的总结，对看到的东西进行回顾和梳理，也方便后来人快速上手。
 
@@ -45,7 +86,8 @@ print(t)
 可以看到打印出来的device='xla:1' 说明变量已经在第一块TPU上了。XLA（Accelerated Linear Algebra）是一种针对特定领域的线性代数编译器，之后我们的模型和变量都会放到xla device上去。
 接下来介绍另外两种方法：
 
-##### 2. 首次注册[Google Cloud](https://cloud.google.com/)，会得到$300的coupon可以体验。我第一次测试的时候大概一天用了$100（主要是TPU费用较多，所以建议注册后拿到赠金但是暂时不使用，先跳转到第三种方式）
+##### 2. 首次注册[Google Cloud](https://cloud.google.com/)
+首次注册会得到$300的coupon可以体验。我第一次测试的时候大概一天用了$100（主要是TPU费用较多，所以建议注册后拿到赠金但是暂时不使用，先跳转到第三种方式）
 
 ##### 3. [TFRC project](https://www.tensorflow.org/tfrc). 
 这是一个Google针对researcher开放的计划，提供为期一个月的免费TPU（据说可以续期）。 
@@ -368,7 +410,7 @@ model_parallel = dp.DataParallel(MNIST, device_ids=devices)
 
 ## Miscellaneous
 
-## TPU基本概念
+### TPU基本概念
 TPU全称是Tensor Processing Unit（张量处理单元），是为机器学习而定制的芯片，经过了专门深度机器学习方面的训练。我的理解是，GPU 的瓶颈在于对于数千个 ALU 中的每一次计算，都必须访问寄存器或共享内存，去读取和存储中间计算结果。毕竟GPU还是一个图像处理的通用处理器，不完全是为机器学习打造。而TPU是真正为矩阵操作设计的矩阵处理器。所以他可以超快地处理神经网络大量的乘法和加法运算，而且耗电量显著降低，占用的物理空间更小（handle the massive multiplications and additions for neural networks, at blazingly fast speeds while consuming much less power. ）一个显著的特点是集成了大量的ALU（e.g. 32,768）.
 
 
@@ -379,7 +421,7 @@ TPU的型号比较容易迷惑，大概有四种类型，分别是TPU V2/TPU V3/
 
 
 
-## TPU v.s. GPU
+### TPU v.s. GPU
 网上有很多不同的测评和不同的说法。一个初步的认识是一块TPU v2 core的算力等于一块GPU V100，所以，一台TPU V2-8等于一台八卡V100机器
 来自[Google 官方](https://cloud.google.com/tpu)的测评：
 ![Image](images/tpuvsgpu1.png)
@@ -387,18 +429,18 @@ TPU的型号比较容易迷惑，大概有四种类型，分别是TPU V2/TPU V3/
 来自[民间](https://medium.com/bigdatarepublic/cost-comparison-of-deep-learning-hardware-google-tpuv2-vs-nvidia-tesla-v100-3c63fe56c20f)的测评：
 ![Image](images/tpuvsgpu3.png)
 
-## 特别注意机器区域的选择
+### 特别注意机器区域的选择
 一般而言，TPU 训练的最佳做法是始终使用同一区域中的资源。在使用 TPU Pod 时，资源区域尤其重要，因为从 Google Cloud Storage 转移数据的速率往往更高。确保您使用 TPU 所在区域中的区域 Google Cloud Storage 存储分区来训练数据集和检查点。
 
-## 关于价格
+### 关于价格
 ![Image](images/mis-tpuprice.png)
 
-## 一些坑。。。
+### 一些坑。。。
 上面的内容基本都是来自于官方的文档，除此以外，我也看了很多人对TPU的使用评价和心得，很多人都在吐槽使用过程比较痛苦，主要是暗坑很多，如图所示。我主要关注到1.有人说tpu对TF的支持还不够完善更别提Pytorch了，2.一个使用了半年多的人放弃TPU了. 不过, 这个讨论是五个月以前的了,可能在这五个月里pytorch xla进步了很多，目前还没踩到很坑的地方。
 ![Image](images/zhihu1.png)
 ![Image](images/zhihu2.png)
 
-## 关于TFRC
+### 关于TFRC
 关于TFRC，这是一个非常好的项目，就像开头提到的他们又慷慨的给了我$300的coupon。但是我注意到网上有一个人提醒“不要去问他们关于设置的问题，他们很烦你问设置问题，如果你一次申请完了之后问设置问题，第二次就别想申请了，他们希望你对google的版面足够熟悉”。So, 在此提醒一下大家。（这也说明好好表现的话可以有续期的机会:) ） 从我和他们为数不多的邮件沟通来说，他们比较关心你的research，给人的感觉是“如果我能帮助到你做有用的research，那我会非常开心，我不介意给你提供免费的资源，如果可以和我随时同步更新你的进展是最好的，如果不能，那最好也是你的研究是能够开放、开源、成果共享的”。
 
 
