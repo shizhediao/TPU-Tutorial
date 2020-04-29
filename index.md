@@ -366,7 +366,7 @@ model_parallel = dp.DataParallel(MNIST, device_ids=devices)
 
 ## Miscellaneous
 
-### TPU基本概念
+## TPU基本概念
 TPU全称是Tensor Processing Unit（张量处理单元），是为机器学习而定制的芯片，经过了专门深度机器学习方面的训练。我的理解是，GPU 的瓶颈在于对于数千个 ALU 中的每一次计算，都必须访问寄存器或共享内存，去读取和存储中间计算结果。毕竟GPU还是一个图像处理的通用处理器，不完全是为机器学习打造。而TPU是真正为矩阵操作设计的矩阵处理器。所以他可以超快地处理神经网络大量的乘法和加法运算，而且耗电量显著降低，占用的物理空间更小（handle the massive multiplications and additions for neural networks, at blazingly fast speeds while consuming much less power. ）一个显著的特点是集成了大量的ALU（e.g. 32,768）.
 
 
@@ -377,7 +377,7 @@ TPU的型号比较容易迷惑，大概有四种类型，分别是TPU V2/TPU V3/
 
 
 
-### TPU v.s. GPU
+## TPU v.s. GPU
 网上有很多不同的测评和不同的说法。一个初步的认识是一块TPU v2 core的算力等于一块GPU V100，所以，一台TPU V2-8等于一台八卡V100机器
 来自[Google 官方](https://cloud.google.com/tpu)的测评：
 ![Image](images/tpuvsgpu1.png)
@@ -385,18 +385,18 @@ TPU的型号比较容易迷惑，大概有四种类型，分别是TPU V2/TPU V3/
 来自[民间](https://medium.com/bigdatarepublic/cost-comparison-of-deep-learning-hardware-google-tpuv2-vs-nvidia-tesla-v100-3c63fe56c20f)的测评：
 ![Image](images/tpuvsgpu3.png)
 
-###特别注意机器区域的选择
+## 特别注意机器区域的选择
 一般而言，TPU 训练的最佳做法是始终使用同一区域中的资源。在使用 TPU Pod 时，资源区域尤其重要，因为从 Google Cloud Storage 转移数据的速率往往更高。确保您使用 TPU 所在区域中的区域 Google Cloud Storage 存储分区来训练数据集和检查点。
 
-### 关于价格
+## 关于价格
 ![Image](images/mis-tpuprice.png)
 
-### 一些坑。。。
+## 一些坑。。。
 上面的内容基本都是来自于官方的文档，除此以外，我也看了很多人对TPU的使用评价和心得，很多人都在吐槽使用过程比较痛苦，主要是暗坑很多，如图所示。我主要关注到1.有人说tpu对TF的支持还不够完善更别提Pytorch了，2.一个使用了半年多的人放弃TPU了. 不过, 这个讨论是五个月以前的了,可能在这五个月里pytorch xla进步了很多，目前还没踩到很坑的地方。
 ![Image](images/zhihu1.png)
 ![Image](images/zhihu2.png)
 
-### 关于TFRC
+## 关于TFRC
 关于TFRC，这是一个非常好的项目，就像开头提到的他们又慷慨的给了我$300的coupon。但是我注意到网上有一个人提醒“不要去问他们关于设置的问题，他们很烦你问设置问题，如果你一次申请完了之后问设置问题，第二次就别想申请了，他们希望你对google的版面足够熟悉”。So, 在此提醒一下大家。（这也说明好好表现的话可以有续期的机会:) ） 从我和他们为数不多的邮件沟通来说，他们比较关心你的research，给人的感觉是“如果我能帮助到你做有用的research，那我会非常开心，我不介意给你提供免费的资源，如果可以和我随时同步更新你的进展是最好的，如果不能，那最好也是你的研究是能够开放、开源、成果共享的”。
 
 
