@@ -4,13 +4,15 @@
 
 
 本教程主要是针对想利用免费TPU跑一些代码的同学，包括了一些基本介绍和使用操作说明。因为TPU对TF的支持比Pytorch要友好很多，并且手里多数项目都是Pytorch，所以实验部分抛弃了Tensorflow，着重对Pytorch的代码迁移进行介绍。
-##获取TPU的三种方式
+
+### 获取TPU的三种方式
 
 ##### 1. 简单体验Colab。
 直接打开[Google Colab](https://colab.research.google.com/notebooks/intro.ipynb)，google就提供了TPU可供使用，优点是使用起来很方便快捷，打开就可以用到不需要配置，缺点是只是一个playground，如果要做大型项目的话还是要看后面两种方式。
 
 ![Image](images/colab1.png)
 ![Image](images/colab2.png)
+
 打开之后输入以下代码进行简单的环境配置
 
 ```
