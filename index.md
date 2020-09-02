@@ -414,4 +414,6 @@ TPU的型号比较容易迷惑，大概有四种类型，分别是TPU V2/TPU V3/
 申请TFRC 项目， 提交申请，2小时后通过
 TFRC的申请，mingtong的2个小时就通过了。但是还需要创建项目把项目编号提交到表格上等待分配TPU。这个过程0830晚上六点提交的，大概40分钟后收到回复说马上通过分配，说是22点就可以用了，4个小时之后才行，才算做正式开通。（但是实际上没有得到zone），到了两天之后我催了两次，才给我zone。
 
-
+### TroubleShooting
+正在运行的TPU程序，如果用ctrl+C强行中断，下一次再运行可能会遇到问题。比如https://github.com/pytorch/xla/issues/1731
+可能的解决方法是pkill -9 python    ps -ef | grep python
