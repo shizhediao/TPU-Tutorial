@@ -387,6 +387,8 @@ TPU的型号比较容易迷惑，大概有四种类型，分别是TPU V2/TPU V3/
 来自[民间](https://medium.com/bigdatarepublic/cost-comparison-of-deep-learning-hardware-google-tpuv2-vs-nvidia-tesla-v100-3c63fe56c20f)的测评：
 ![Image](images/tpuvsgpu3.png)
 
+20200903 自己经验：dont stop pretrain的DAPT, 基于roberta训练。max_step=125000, data=38 GB. 1020 hours on 1 2080Ti (转换一下是128h on 8*2080Ti).  16 hours on TPU V3-8.   加速比128/16 = 8
+
 ### Zone
 一般而言，TPU 训练的最佳做法是始终使用同一区域中的资源。在使用 TPU Pod 时，资源区域尤其重要，因为从 Google Cloud Storage 转移数据的速率往往更高。确保您使用 TPU 所在区域中的区域 Google Cloud Storage 存储分区来训练数据集和检查点。
 
